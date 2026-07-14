@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { createPage, setPageStatus } from "./actions";
+import { createPage, deletePage, setPageStatus } from "./actions";
 import NewPageForm from "@/components/crm/NewPageForm";
 import PageStatusToggle from "@/components/crm/PageStatusToggle";
+import DeletePageButton from "@/components/crm/DeletePageButton";
 import type { Page } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -55,6 +56,7 @@ export default async function PaginasListPage() {
               <th className="px-4 py-3">Slug</th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3">Actualizada</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
@@ -72,11 +74,16 @@ export default async function PaginasListPage() {
                 <td className="px-4 py-3 text-brown-dark/50">
                   {new Date(p.updated_at).toLocaleString("es-MX")}
                 </td>
+                <td className="px-4 py-3 text-right">
+                  {p.slug !== "home" && (
+                    <DeletePageButton pageId={p.id} pageTitle={p.title} action={deletePage} />
+                  )}
+                </td>
               </tr>
             ))}
             {pages && pages.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-10 text-center text-brown-dark/50">
+                <td colSpan={5} className="px-4 py-10 text-center text-brown-dark/50">
                   Aún no hay páginas.
                 </td>
               </tr>

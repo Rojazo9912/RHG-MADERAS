@@ -8,6 +8,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ── Evita que el nav sticky tape las secciones ancladas ─── */
+#productos,
+#cotizar,
+#contacto {
+  scroll-margin-top: 88px;
+}
+
 body {
   color: #1a0f08;
   background: #faf6f0;

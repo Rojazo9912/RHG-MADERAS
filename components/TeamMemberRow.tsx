@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import type { Profile, UserLocation, UserRole } from "@/types/database";
+import { useToast } from "@/components/ui/Toast";
 
 export default function TeamMemberRow({
   profile,
@@ -13,7 +14,19 @@ export default function TeamMemberRow({
     updates: { role?: UserRole; location?: UserLocation; active?: boolean }
   ) => Promise<void>;
 }) {
+  const toast = useToast();
   const [isPending, startTransition] = useTransition();
+
+  function run(updates: { role?: UserRole; location?: UserLocation; active?: boolean }, message: string) {
+    startTransition(async () => {
+      try {
+        await action(profile.id, updates);
+        toast.show(message);
+      } catch {
+        toast.show("No se pudo actualizar el miembro del equipo.", "error");
+      }
+    });
+  }
 
   return (
     <tr className="border-t border-brown-dark/5">
@@ -22,9 +35,7 @@ export default function TeamMemberRow({
         <select
           defaultValue={profile.role}
           disabled={isPending}
-          onChange={(e) =>
-            startTransition(() => action(profile.id, { role: e.target.value as UserRole }))
-          }
+          onChange={(e) => run({ role: e.target.value as UserRole }, "Rol actualizado.")}
           className="rounded-md border border-brown-dark/20 px-2 py-1 text-sm"
         >
           <option value="vendedor">Vendedor</option>
@@ -35,9 +46,7 @@ export default function TeamMemberRow({
         <select
           defaultValue={profile.location}
           disabled={isPending}
-          onChange={(e) =>
-            startTransition(() => action(profile.id, { location: e.target.value as UserLocation }))
-          }
+          onChange={(e) => run({ location: e.target.value as UserLocation }, "Ubicación actualizada.")}
           className="rounded-md border border-brown-dark/20 px-2 py-1 text-sm"
         >
           <option value="durango">Durango</option>
@@ -48,7 +57,7 @@ export default function TeamMemberRow({
       <td className="px-4 py-3">
         <button
           disabled={isPending}
-          onClick={() => startTransition(() => action(profile.id, { active: !profile.active }))}
+          onClick={() => run({ active: !profile.active }, profile.active ? "Miembro desactivado." : "Miembro activado.")}
           className={`rounded-full px-3 py-1 text-xs font-medium ${
             profile.active ? "bg-forest/20 text-forest" : "bg-red-100 text-red-700"
           }`}

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import QuoteForm from "@/components/QuoteForm";
 import SiteNav from "@/components/SiteNav";
+import Reveal from "@/components/Reveal";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
 import { createClient } from "@/lib/supabase/server";
@@ -97,7 +98,15 @@ export default async function HomePage() {
       <main id="main">
       <div id="productos">
         {blocks && blocks.length > 0 ? (
-          blocks.map((block) => <BlockRenderer key={block.id} block={block} />)
+          blocks.map((block, i) =>
+            i === 0 ? (
+              <BlockRenderer key={block.id} block={block} />
+            ) : (
+              <Reveal key={block.id}>
+                <BlockRenderer block={block} />
+              </Reveal>
+            )
+          )
         ) : (
           <>
             {/* Hero fallback — cinematográfico */}
@@ -179,6 +188,7 @@ export default async function HomePage() {
             </section>
 
             {/* Productos fallback */}
+            <Reveal>
             <section id="nosotros" className="bg-cream py-24 sm:py-32">
               <div className="mx-auto max-w-7xl px-4 sm:px-6">
                 <div className="text-center mb-16">
@@ -224,8 +234,10 @@ export default async function HomePage() {
                 </div>
               </div>
             </section>
+            </Reveal>
 
             {/* Por qué elegirnos */}
+            <Reveal>
             <section className="bg-brown-dark py-24">
               <div className="mx-auto max-w-7xl px-4 sm:px-6">
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -279,11 +291,13 @@ export default async function HomePage() {
                 </div>
               </div>
             </section>
+            </Reveal>
           </>
         )}
       </div>
 
       {/* ── FORMULARIO DE COTIZACIÓN ──────────────────────────────── */}
+      <Reveal>
       <section id="cotizar" className="bg-cream-dark py-24 sm:py-32">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <div className="text-center mb-12">
@@ -320,6 +334,7 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
+      </Reveal>
       </main>
 
       {/* ── FOOTER ───────────────────────────────────────────────── */}

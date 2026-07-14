@@ -2,12 +2,14 @@
 
 import { useRef, useState, useTransition } from "react";
 import type { UserLocation, UserRole } from "@/types/database";
+import { useToast } from "@/components/ui/Toast";
 
 export default function InviteTeamMemberForm({
   action,
 }: {
   action: (input: { email: string; fullName: string; role: UserRole; location: UserLocation }) => Promise<void>;
 }) {
+  const toast = useToast();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
@@ -29,6 +31,7 @@ export default function InviteTeamMemberForm({
           try {
             await action(input);
             formRef.current?.reset();
+            toast.show(`Invitación enviada a ${input.email}.`);
           } catch (err) {
             setError(err instanceof Error ? err.message : "Error al invitar.");
           }

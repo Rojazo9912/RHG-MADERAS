@@ -5,6 +5,7 @@ import { updateLeadStatus, assignLead, addLeadNote } from "./actions";
 import LeadStatusSelect from "@/components/LeadStatusSelect";
 import LeadAssignSelect from "@/components/LeadAssignSelect";
 import LeadNoteForm from "@/components/LeadNoteForm";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 import type { Lead, LeadNote, Profile } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -87,9 +88,11 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
           <a
             href={`https://wa.me/${lead.telefono.replace(/\D/g, "")}`}
             target="_blank"
-            className="mt-4 inline-block rounded-md bg-[#25D366] px-4 py-2 text-sm font-semibold text-white"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 rounded-md bg-[#25D366] px-4 py-2 text-sm font-semibold text-white hover:bg-[#20bc59] transition-colors"
           >
-            💬 Responder por WhatsApp
+            <WhatsAppIcon className="w-4 h-4" />
+            Responder por WhatsApp
           </a>
         )}
       </div>

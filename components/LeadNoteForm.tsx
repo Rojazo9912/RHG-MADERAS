@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useTransition } from "react";
+import { useToast } from "@/components/ui/Toast";
 
 export default function LeadNoteForm({
   leadId,
@@ -9,6 +10,7 @@ export default function LeadNoteForm({
   leadId: string;
   action: (leadId: string, note: string) => Promise<void>;
 }) {
+  const toast = useToast();
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -20,8 +22,13 @@ export default function LeadNoteForm({
         const note = new FormData(e.currentTarget).get("note");
         if (!note) return;
         startTransition(async () => {
-          await action(leadId, String(note));
-          formRef.current?.reset();
+          try {
+            await action(leadId, String(note));
+            formRef.current?.reset();
+            toast.show("Nota agregada.");
+          } catch {
+            toast.show("No se pudo agregar la nota.", "error");
+          }
         });
       }}
       className="flex gap-2"

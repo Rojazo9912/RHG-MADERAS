@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Inbox } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS, type Lead, type LeadStatus } from "@/types/database";
 
@@ -112,7 +113,8 @@ export default async function LeadsDashboard({
 
             {leads && leads.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-brown-dark/50">
+                <td colSpan={6} className="px-4 py-14 text-center text-brown-dark/40">
+                  <Inbox className="w-8 h-8 mx-auto mb-2" aria-hidden="true" />
                   No hay leads con esos filtros.
                 </td>
               </tr>

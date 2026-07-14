@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import type { BlockContent, BlockType } from "@/types/database";
+import type { BlockContent, BlockType, PageBlock } from "@/types/database";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -32,7 +32,7 @@ const DEFAULT_CONTENT: Record<BlockType, BlockContent> = {
   spacer: { alto: 40 },
 };
 
-export async function createBlock(pageId: string, type: BlockType) {
+export async function createBlock(pageId: string, type: BlockType): Promise<PageBlock> {
   const supabase = await requireAdmin();
 
   const { data: existing } = await supabase
@@ -42,17 +42,22 @@ export async function createBlock(pageId: string, type: BlockType) {
     .order("position", { ascending: false })
     .limit(1);
 
-  const nextPosition = (existing?.[0]?.position ?? 0) + 1;
+  const nextPosition = (existing?.[0]?.position ?? -1) + 1;
 
-  const { error } = await supabase.from("page_blocks").insert({
-    page_id: pageId,
-    type,
-    position: nextPosition,
-    content: DEFAULT_CONTENT[type],
-  });
+  const { data, error } = await supabase
+    .from("page_blocks")
+    .insert({
+      page_id: pageId,
+      type,
+      position: nextPosition,
+      content: DEFAULT_CONTENT[type],
+    })
+    .select()
+    .single<PageBlock>();
 
-  if (error) throw new Error(error.message);
+  if (error || !data) throw new Error(error?.message ?? "No se pudo crear el bloque.");
   revalidatePath(`/crm/paginas/${pageId}`);
+  return data;
 }
 
 export async function updateBlockContent(blockId: string, pageId: string, content: BlockContent) {
@@ -71,28 +76,14 @@ export async function deleteBlock(blockId: string, pageId: string) {
   revalidatePath("/");
 }
 
-export async function moveBlock(pageId: string, blockId: string, direction: "up" | "down") {
+export async function reorderBlocks(pageId: string, orderedBlockIds: string[]) {
   const supabase = await requireAdmin();
 
-  const { data: blocks } = await supabase
-    .from("page_blocks")
-    .select("id, position")
-    .eq("page_id", pageId)
-    .order("position", { ascending: true });
-
-  if (!blocks) return;
-
-  const index = blocks.findIndex((b) => b.id === blockId);
-  const swapIndex = direction === "up" ? index - 1 : index + 1;
-  if (index === -1 || swapIndex < 0 || swapIndex >= blocks.length) return;
-
-  const a = blocks[index];
-  const b = blocks[swapIndex];
-
-  await Promise.all([
-    supabase.from("page_blocks").update({ position: b.position }).eq("id", a.id),
-    supabase.from("page_blocks").update({ position: a.position }).eq("id", b.id),
-  ]);
+  await Promise.all(
+    orderedBlockIds.map((id, index) =>
+      supabase.from("page_blocks").update({ position: index }).eq("id", id).eq("page_id", pageId)
+    )
+  );
 
   revalidatePath(`/crm/paginas/${pageId}`);
   revalidatePath("/");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, TreePine, X } from "lucide-react";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 
@@ -16,6 +16,26 @@ const FOCUS_RING =
 
 export default function SiteNav() {
   const [open, setOpen] = useState(false);
+  const [activeHref, setActiveHref] = useState<string | null>(null);
+
+  useEffect(() => {
+    const sections = LINKS.map((l) => document.getElementById(l.href.slice(1))).filter(
+      (el): el is HTMLElement => el !== null
+    );
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length > 0) {
+          setActiveHref(`#${visible[0].target.id}`);
+        }
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 glass-nav">
@@ -33,18 +53,21 @@ export default function SiteNav() {
         </a>
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-brown-mid">
-          {LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={`relative py-1 rounded-sm hover:text-forest transition-colors
-                         after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0
-                         after:bg-forest after:transition-all after:duration-300
-                         hover:after:w-full ${FOCUS_RING}`}
-            >
-              {link.label}
-            </a>
-          ))}
+          {LINKS.map((link) => {
+            const isActive = activeHref === link.href;
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                aria-current={isActive ? "location" : undefined}
+                className={`relative py-1 rounded-sm hover:text-forest transition-colors
+                           after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-forest after:transition-all after:duration-300
+                           hover:after:w-full ${isActive ? "text-forest after:w-full" : "after:w-0"} ${FOCUS_RING}`}
+              >
+                {link.label}
+              </a>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-3">
