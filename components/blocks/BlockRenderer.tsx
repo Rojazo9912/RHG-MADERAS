@@ -68,10 +68,20 @@ export default function BlockRenderer({ block }: { block: PageBlock }) {
             {((c.items as ProductGridItem[]) || []).map((item, i) => (
               <div
                 key={i}
-                className="rounded-lg border border-brown-dark/10 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+                className="rounded-lg border border-brown-dark/10 bg-white p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col"
               >
+                {item.image_url && (
+                  <div className="mb-4 -mx-6 -mt-6 aspect-[4/3] overflow-hidden rounded-t-lg">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.image_url}
+                      alt={item.nombre}
+                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    />
+                  </div>
+                )}
                 <h3 className="font-semibold text-lg text-forest">{item.nombre}</h3>
-                <p className="mt-2 text-sm text-brown-dark/70">{item.desc}</p>
+                <p className="mt-2 text-sm text-brown-dark/70 flex-1">{item.desc}</p>
               </div>
             ))}
           </div>

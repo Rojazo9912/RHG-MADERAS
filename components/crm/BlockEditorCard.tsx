@@ -8,6 +8,7 @@ import type {
   StatsItem,
 } from "@/types/database";
 import { BLOCK_TYPE_LABELS } from "@/types/database";
+import ImageUploader from "./ImageUploader";
 
 type Actions = {
   updateBlockContent: (blockId: string, pageId: string, content: BlockContent) => Promise<void>;
@@ -143,8 +144,8 @@ export default function BlockEditorCard({
         {block.type === "image" && (
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelCls}>URL de la imagen</label>
-              <input className={inputCls} value={content.url ?? ""} onChange={(e) => set("url", e.target.value)} />
+              <label className={labelCls}>Imagen</label>
+              <ImageUploader currentUrl={content.url} onUpload={(url) => set("url", url)} />
             </div>
             <div>
               <label className={labelCls}>Texto alternativo</label>
@@ -173,6 +174,7 @@ export default function BlockEditorCard({
             <ItemListEditor
               items={(content.items as ProductGridItem[]) ?? []}
               fields={[
+                { key: "image_url", placeholder: "Imagen del producto", type: "image" },
                 { key: "nombre", placeholder: "Nombre" },
                 { key: "desc", placeholder: "Descripción" },
               ]}
@@ -216,7 +218,7 @@ function ItemListEditor({
   onChange,
 }: {
   items: Record<string, string>[];
-  fields: { key: string; placeholder: string }[];
+  fields: { key: string; placeholder: string; type?: "text" | "image" }[];
   onChange: (items: Record<string, string>[]) => void;
 }) {
   function updateItem(index: number, key: string, value: string) {
@@ -234,25 +236,32 @@ function ItemListEditor({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {items.map((item, i) => (
-        <div key={i} className="flex gap-2 items-center">
-          {fields.map((f) => (
-            <input
-              key={f.key}
-              placeholder={f.placeholder}
-              value={item[f.key] ?? ""}
-              onChange={(e) => updateItem(i, f.key, e.target.value)}
-              className="flex-1 rounded-md border border-brown-dark/20 px-3 py-2 text-sm"
-            />
-          ))}
-          <button onClick={() => removeItem(i)} className="text-red-600 text-xs px-2">
+        <div key={i} className="flex gap-3 items-start border border-brown-dark/10 p-3 rounded-md bg-brown-dark/5">
+          <div className="flex-1 space-y-2">
+            {fields.map((f) => (
+              <div key={f.key}>
+                {f.type === "image" ? (
+                  <ImageUploader currentUrl={item[f.key]} onUpload={(url) => updateItem(i, f.key, url)} />
+                ) : (
+                  <input
+                    placeholder={f.placeholder}
+                    value={item[f.key] ?? ""}
+                    onChange={(e) => updateItem(i, f.key, e.target.value)}
+                    className="w-full rounded-md border border-brown-dark/20 px-3 py-2 text-sm"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+          <button onClick={() => removeItem(i)} className="text-red-600 text-xs px-2 mt-2 font-semibold">
             ✕
           </button>
         </div>
       ))}
-      <button onClick={addItem} className="text-xs text-forest underline">
-        + Agregar
+      <button onClick={addItem} className="text-xs text-forest font-semibold underline">
+        + Agregar ítem
       </button>
     </div>
   );

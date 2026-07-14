@@ -68,6 +68,7 @@ export type Page = {
 export type ProductGridItem = {
   nombre: string;
   desc: string;
+  image_url?: string;
 };
 
 export type StatsItem = {
