@@ -116,4 +116,10 @@ export default async function LeadsDashboard({
                   No hay leads con esos filtros.
                 </td>
               </tr>
-            
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
