@@ -352,7 +352,7 @@ export default async function HomePage() {
               </div>
               <p className="text-sm leading-relaxed max-w-xs">
                 Especialistas en madera tratada y maderas tropicales para la
-                construcción y el diseño. Durango y Guadalajara.
+                construcción y el diseño. Durango.
               </p>
               <div className="flex gap-3 mt-6">
                 <a
@@ -365,16 +365,7 @@ export default async function HomePage() {
                   <WhatsAppIcon className="w-3.5 h-3.5" />
                   Durango
                 </a>
-                <a
-                  href="https://wa.me/5213350861563"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30
-                             px-4 py-2 text-xs font-semibold text-[#25D366] hover:bg-[#25D366]/20 transition-colors"
-                >
-                  <WhatsAppIcon className="w-3.5 h-3.5" />
-                  Guadalajara
-                </a>
+                  
               </div>
             </div>
 
