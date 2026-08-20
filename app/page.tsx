@@ -397,7 +397,9 @@ export default async function HomePage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
-                  <span>Durango, Dgo. · Guadalajara, Jal.</span>
+                  <span>Durango, Dgo.
+
+                  </span>
                 </li>
               </ul>
             </div>
